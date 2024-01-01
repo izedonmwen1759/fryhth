@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.2/plyr.css">
+</head>
+<body bgcolor="black">
+    <input type="hidden" id="hideValue">
+    
+    <div align="center" id="vid1" style="width: 100%; display: none;" class="bg-transparent">
+      <div style="z-index: 999;"><span class="btn btn-sm border-white skippa" style="color: white;background-color: grey;">Skip</span></div>
+         <video autoplay width="100%" controls  poster="" class="video-js" id="videoid" preload="auto"  controlList="nodownload"></video>    
+        
+    </div>
+            <div align="center" id="vid12" style="width: 100%;" class="bg-transparent videocontainer">
+            <div id="message" style="display: none;background-color: black;z-index: 999;" class="p-1 text-light"></div>
+                <div class="bground">     
+                    <div class="adPic d-none"></div>             
+                   <div class="vplay bg-dark">
+                    <!--<label class="title-label btn border-white text-light channelname"></label>-->
+                     <video  autoplay controls width="100%" poster="" id="player" preload="none" controlList="nodownload"></video>
+                            <center class="external d-none">
+                              
+                              <a class="btn m-1 btn-warning p-1 text-dark vlc w-50">VLC</a></br>
+                              <a class="btn btn-primary p-1 text-dark mxp w-50">MX Player</a>
+                              <p class="text-light">This content is VLC enabled.</p>
+                            </center>
+                    </div>
+                </div>
+              
+          </div>
+
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.plyr.io/3.7.2/plyr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script>
+    const video = document.getElementById("player")
+const videoid = document.getElementById('videoid')
+const skippa = document.querySelector('.skippa')
+const adVideo = document.getElementById('vid1')
+const adVideoVid = document.getElementById('video_container')
+const videoContainer =document.querySelector('.videocontainer')
+const defaultOptions = {};
+playStore()
+function playStore() {
+     fetch('./media/aljazeera',{
+        method: 'GET',
+        mode:'cors'
+    })
+    .then(response => response.text())
+    .then(res =>{
+        if(res != ''){
+             runPlay()
+        }else{
+            playStore()
+        }
+       
+    })
+}
+   
+
+const runPlay = ()=>{
+  const url = './media/aljazeera'
+        
+        if(Hls.isSupported()){
+            const hls = new Hls()
+        video.muted=false 
+        
+        hls.loadSource(url)        
+        hls.on(Hls.Events.MANIFEST_PARSED,(event,data)=>{           
+         const availableQualities = hls.levels.map((l)=> l.height)
+          defaultOptions.controls = [
+                    'play-large',
+                    'restart',
+                    'rewind',
+                    'play',
+                    'fast-forward',
+                    'progress',
+                    'current-time',
+                    'duration',
+                    'mute',
+                    'volume',
+                    'captions',
+                    'settings',
+                    'pip',
+                    'airplay',
+                    'autoPlay',
+                    'fullscreen'
+          ];
+          new Plyr(video, defaultOptions)
+          
+        })       
+       hls.attachMedia(video)              
+       window.hls = hls
+    }
+    
+}
+</script>
+</html>
+<style> 
+  .title-label {
+   position: absolute;
+   z-index: 9;
+   margin-top: 5px;
+   bottom:3px;
+   margin-left: 5px;
+}
+#play{
+  width: 100%;
+  height: 100vh;
+}
+</style>
